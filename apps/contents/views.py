@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.views import View
 
+
 from .models import ContentCategory
 from .utils import get_categories
 
