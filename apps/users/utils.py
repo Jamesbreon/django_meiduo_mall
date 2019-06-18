@@ -24,13 +24,18 @@ class MulitUserAuthciate(ModelBackend):
     def authenticate(self, request, username=None, password=None, **kwargs):
         user = username_or_mobile(username)
 
+        # 判断request是否为None
+        # 如果为None则访问的是后端，需要判断当前用户是否能具有权限
+        if request is None:
+            if user.is_staff is False:
+                return None
+
         if user and user.check_password(password):
             return user
 
 
 # 验证邮箱发送邮件
 def gen_verify_url(user):
-
     serializer = Serializer(settings.SECRET_KEY, 3600)
     data = {'user_id': user.id, 'email': user.email}
     token = serializer.dumps(data).decode()
@@ -55,7 +60,3 @@ def verify_activate_email(token):
             return None
         else:
             return user
-
-
-
-

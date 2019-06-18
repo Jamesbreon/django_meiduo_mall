@@ -11,10 +11,10 @@ class UserLoginSerializer(serializers.Serializer):
     def validate(self, attrs):
         # # 获取前端传来的数据
         # username = attrs.get('username')
-        # passoword = attrs.get('password')
+        # password = attrs.get('password')
         #
         # # 采用django传统验证方法进行验证
-        # authenticate(username=username, passoword=passoword)
+        # user = authenticate(username=username, password=password)
 
         user = authenticate(**attrs)
         if not user:

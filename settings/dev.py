@@ -1,5 +1,6 @@
 import os
 import sys
+import datetime
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -32,6 +33,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
 
+    'haystack',  # 全文检索
+    'django_crontab',  # 页面静态化任务定时器
+    'rest_framework',  # DRF框架
+    'corsheaders',  # 解决跨域问题
+
+
+
     'users.apps.UsersConfig',
     'oanuth.apps.OanuthConfig',  # 注册QQ认证子应用
     'weboauth.apps.WeboauthConfig',  # 微博登录子应用
@@ -41,12 +49,10 @@ INSTALLED_APPS = [
     'orders.apps.OrdersConfig',  # 订单子应用
     'payment.apps.PaymentConfig',  # 支付宝支付子应用
 
-    'haystack',  # 全文检索
-    'django_crontab', # 页面静态化任务定时器
-
 ]
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',   # 解决跨域问题中间件配置，必须放在第一位
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -93,18 +99,18 @@ DATABASES = {
         'PASSWORD': '123321lsy',
         'NAME': 'meiduo_test',
     },
-    'slave': {
-        'ENGINE': 'django.db.backends.mysql',
-        'HOST': '172.16.253.167',
-        'PORT': 8306,
-        'USER': 'root',
-        'PASSWORD': 'mysql',
-        'NAME': 'meiduo_test',
-    },
+    # 'slave': {
+    #     'ENGINE': 'django.db.backends.mysql',
+    #     'HOST': '172.16.253.167',
+    #     'PORT': 8306,
+    #     'USER': 'root',
+    #     'PASSWORD': 'mysql',
+    #     'NAME': 'meiduo_test',
+    # },
 }
 
 # 配置读写分离路由
-DATABASE_ROUTERS = ['meiduo_mall.utils.db_router.MasterSlaveDBRouter']
+# DATABASE_ROUTERS = ['meiduo_mall.utils.db_router.MasterSlaveDBRouter']
 
 
 # Password validation
@@ -309,3 +315,31 @@ CRONTAB_COMMAND_PREFIX = 'LANG_ALL=zh_cn.UTF-8'
 
 # 配置收集静态文件存放目录
 STATIC_ROOT = os.path.join(os.path.dirname(BASE_DIR), 'static')
+
+
+# 解决跨域问题的白名单
+# CORS
+CORS_ORIGIN_WHITELIST = (
+    'http://127.0.0.1:8080',
+    'http://localhost:8080',
+    'http://www.meiduo.site:8080',
+    'http://api.meiduo.site:8000'
+)
+CORS_ALLOW_CREDENTIALS = True   # 允许携带cookie
+
+# 配置drf认证
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',  # 增加jwt认证
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
+}
+
+# 过期时间
+# 1 设置时间点：2019.06.12 12:24:21 某一时间点
+# 2 设置时间段：day=7 过期时间设置7天 为时间段
+JWT_AUTH = {
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=1),  # 设置过期时间
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'admin.utils.jwt_response.jwt_response_payload_handler',  # 配置token返回值，处理函数
+}

@@ -12,9 +12,9 @@ class UserLoginView(APIView):
         # 启动校验流程
         serializer.is_valid(raise_exception=True)
 
-        # serializer.data 可获取最终有效数据
+        # serializer.validated_data 可获取最终有效数据
         return Response({
-            'username': serializer.data.get('user').username,
-            'user_id': serializer.data.get('user').id,
-            'token': serializer.data.get('jwt_token')
+            'username': serializer.validated_data.get('user').username,
+            'user_id': serializer.validated_data.get('user').id,
+            'token': serializer.validated_data.get('jwt_token')
         })
