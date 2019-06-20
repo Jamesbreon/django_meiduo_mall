@@ -1,28 +1,19 @@
-from rest_framework.generics import GenericAPIView, ListAPIView
-from rest_framework.response import Response
-from rest_framework.pagination import PageNumberPagination
+from rest_framework.generics import GenericAPIView, ListAPIView, CreateAPIView
 
 from admin.serializers.user_serializer import UserSerializer
 from users.models import User
+from admin.utils.pagination import MyPage
 
 
-class MyPage(PageNumberPagination):
-    page_query_param = 'page'
-    page_size_query_param = 'pagesize'
-    page_size = 2
-    max_page_size = 10
-
-    def get_paginated_response(self, data):
-        return Response({
-            'count': self.page.paginator.count,
-            'lists': data,
-            'page': self.page.number,
-            'pages': self.page.paginator.num_pages,
-            'pagesize': self.page_size
-        })
+# 获取数据集合
+# GET /users/?keyword=&page=&pagesize=
+# 视图：ListAPIView
 
 
-class UserListView(ListAPIView):  # (GenericAPIView):
+# 新增用户
+# POST /users/
+# 创建单一用户用 CreateAPIList
+class UserListView(ListAPIView, CreateAPIView):  # (GenericAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     # 自定义分页器
@@ -33,11 +24,9 @@ class UserListView(ListAPIView):  # (GenericAPIView):
         # 获取前端传来的keyword
         keyword = self.request.query_params.get('keyword')
         if keyword:
-
             return self.queryset.filter(username__contains=keyword)
 
         return self.queryset.all()
-
 
     # def get(self, request):
     #     # 获取查询数据集

@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from django.conf import settings
 from datetime import timedelta
 import pytz
+from rest_framework.permissions import IsAdminUser
 
 
 from users.models import User
@@ -15,6 +16,8 @@ from admin.serializers.home_serializers import GoodsVisitSerializer
 
 
 class HomeView(ViewSet):
+
+    permission_classes = [IsAdminUser]
 
     # GET
     # /meiduo_admin/statistical/total_count/
