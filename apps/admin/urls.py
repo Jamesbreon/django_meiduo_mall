@@ -5,7 +5,7 @@ from rest_framework.routers import SimpleRouter
 
 from admin.views.homeview import HomeView
 from admin.views.userview import UserListView
-from admin.views.sku_views import SKUView
+from admin.views.sku_views import SKUView, SKUCategoryView, SPUView
 
 
 urlpatterns = [
@@ -14,6 +14,9 @@ urlpatterns = [
     url(r'^users/$', UserListView.as_view()),
 
     url(r'^skus/$', SKUView.as_view()),
+    url(r'^skus/(?P<pk>\d+)/$', SKUView.as_view()),
+    url(r'^skus/categories/$', SKUCategoryView.as_view()),
+    url(r'^goods/simple/$', SPUView.as_view())
 ]
 
 router = SimpleRouter()

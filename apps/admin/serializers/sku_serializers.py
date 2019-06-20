@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from goods.models import SKU, SKUSpecification
+from goods.models import SKU, SKUSpecification, GoodsCategory, SPU
 
 
 class SKUSpecificationSerializer(serializers.ModelSerializer):
@@ -24,3 +24,18 @@ class SKUSerializer(serializers.ModelSerializer):
     class Meta:
         model = SKU
         fields = "__all__"
+
+
+class SKUCategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = GoodsCategory
+        fields = ['id', 'name']
+
+
+class SPUSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = SPU
+        fields = ['id', 'name']
+
