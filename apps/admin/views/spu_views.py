@@ -12,13 +12,6 @@ class SPUViewSet(ModelViewSet):
 
     pagination_class = MyPage
 
-    def get_queryset(self):
-        keyword = self.request.query_params.get('keyword')
-        if keyword:
-            return self.queryset.filter(name__contains=keyword)
-
-        return self.queryset.all()
-
 
 class SPUBrandView(ListAPIView):
     queryset = Brand.objects.all()

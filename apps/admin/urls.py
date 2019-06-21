@@ -2,12 +2,11 @@ from django.conf.urls import url
 from rest_framework_jwt.views import obtain_jwt_token
 from rest_framework.routers import SimpleRouter
 
-
 from admin.views.homeview import HomeView
 from admin.views.userview import UserListView
 from admin.views.sku_views import SKUView, SKUCategoryView, SPUView, GoodsSpecsView
 from admin.views.spu_views import SPUViewSet, SPUBrandView, ChannelCategoryView
-
+from admin.views.specs_views import SpecModelViewSet
 
 urlpatterns = [
     # url(r'^authorizations/$', user_login_view.UserLoginView.as_view()),
@@ -25,8 +24,12 @@ urlpatterns = [
     url(r'^goods/brands/simple/$', SPUBrandView.as_view()),
     url(r'^goods/channel/categories/$', ChannelCategoryView.as_view()),
     url(r'^goods/channel/categories/(?P<pk>\d+)/$', ChannelCategoryView.as_view()),
+
+    # url(r'^goods/specs/$', SpecModelViewSet.as_view({'get': 'list', 'post': 'create'})),
+    # url(r'^goods/specs/(?P<pk>\d+)/$', SpecModelViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
 ]
 
 router = SimpleRouter()
 router.register(prefix='statistical', viewset=HomeView, base_name='home')
+router.register(prefix='goods/specs/', viewset=SpecModelViewSet, base_name='specs')
 urlpatterns += router.urls
