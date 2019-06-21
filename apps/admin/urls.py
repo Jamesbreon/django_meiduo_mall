@@ -5,7 +5,7 @@ from rest_framework.routers import SimpleRouter
 
 from admin.views.homeview import HomeView
 from admin.views.userview import UserListView
-from admin.views.sku_views import SKUView, SKUCategoryView, SPUView
+from admin.views.sku_views import SKUView, SKUCategoryView, SPUView, GoodsSpecsView
 
 
 urlpatterns = [
@@ -13,10 +13,11 @@ urlpatterns = [
     url(r'^authorizations/$', obtain_jwt_token),
     url(r'^users/$', UserListView.as_view()),
 
-    url(r'^skus/$', SKUView.as_view()),
-    url(r'^skus/(?P<pk>\d+)/$', SKUView.as_view()),
+    url(r'^skus/$', SKUView.as_view({'get': 'list', 'post': 'create'})),
+    url(r'^skus/(?P<pk>\d+)/$', SKUView.as_view({'get': 'retrieve', 'delete': 'destroy', 'put': 'update'})),
     url(r'^skus/categories/$', SKUCategoryView.as_view()),
-    url(r'^goods/simple/$', SPUView.as_view())
+    url(r'^goods/simple/$', SPUView.as_view()),
+    url(r'^goods/(?P<pk>\d+)/specs/$', GoodsSpecsView.as_view()),
 ]
 
 router = SimpleRouter()
