@@ -7,6 +7,7 @@ from admin.views.userview import UserListView
 from admin.views.sku_views import SKUView, SKUCategoryView, SPUView, GoodsSpecsView
 from admin.views.spu_views import SPUViewSet, SPUBrandView, ChannelCategoryView
 from admin.views.specs_views import SpecModelViewSet
+from admin.views.option_views import OptionModelViewSet, OptionSimpleView
 
 urlpatterns = [
     # url(r'^authorizations/$', user_login_view.UserLoginView.as_view()),
@@ -25,11 +26,21 @@ urlpatterns = [
     url(r'^goods/channel/categories/$', ChannelCategoryView.as_view()),
     url(r'^goods/channel/categories/(?P<pk>\d+)/$', ChannelCategoryView.as_view()),
 
-    # url(r'^goods/specs/$', SpecModelViewSet.as_view({'get': 'list', 'post': 'create'})),
-    # url(r'^goods/specs/(?P<pk>\d+)/$', SpecModelViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+    url(r'^goods/specs/$', SpecModelViewSet.as_view({'get': 'list', 'post': 'create'})),
+    url(r'^goods/specs/(?P<pk>\d+)/$', SpecModelViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+
+    # 规格选项表展示
+    url(r'^specs/options/$', OptionModelViewSet.as_view({'get': 'list', 'post': 'create'})),
+    # 修改选项规格，获取单一模型
+    url(r'^specs/options/(?P<pk>\d+)/$', OptionModelViewSet.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'})),
+
+
+
+    # 保存规格是需要查询出当前所以规格
+    url(r'^goods/specs/simple/$', OptionSimpleView.as_view()),
 ]
 
 router = SimpleRouter()
 router.register(prefix='statistical', viewset=HomeView, base_name='home')
-router.register(prefix='goods/specs/', viewset=SpecModelViewSet, base_name='specs')
+# router.register(prefix='goods/specs/', viewset=SpecModelViewSet, base_name='specs')
 urlpatterns += router.urls
