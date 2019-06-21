@@ -10,7 +10,7 @@ class Brand(BaseModels):
     first_letter = models.CharField(max_length=1, verbose_name='品牌首字母')
 
     class Meta:
-        db_table = 'tb_brands'
+        db_table = 'tb_brand'
         verbose_name = '品牌'
         verbose_name_plural = verbose_name
 

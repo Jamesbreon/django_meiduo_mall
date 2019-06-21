@@ -19,16 +19,18 @@ class UserSerializer(ModelSerializer):
         }
 
     def create(self, validated_data):
-        # 设置密码
-        password = validated_data.get('password')
-        # 对输入的密码进行加密
-        password = make_password(password)
-        # 设置管理员权限
-        validated_data['password'] = password
-        validated_data['is_staff'] = True
+        # # 设置密码
+        # password = validated_data.get('password')
+        # # 对输入的密码进行加密
+        # password = make_password(password)
+        # # 设置管理员权限
+        # validated_data['password'] = password
+        # validated_data['is_staff'] = True
+        #
+        # instance = self.Meta.model.objects.create_user(**validated_data)
 
-        instance = self.Meta.model.objects.create_user(**validated_data)
-        return instance
+        # 自动创建管理员用户
+        return self.Meta.model.objects.create_superuser(**validated_data)
 
 
 

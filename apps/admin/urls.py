@@ -6,6 +6,7 @@ from rest_framework.routers import SimpleRouter
 from admin.views.homeview import HomeView
 from admin.views.userview import UserListView
 from admin.views.sku_views import SKUView, SKUCategoryView, SPUView, GoodsSpecsView
+from admin.views.spu_views import SPUViewSet, SPUBrandView, ChannelCategoryView
 
 
 urlpatterns = [
@@ -18,6 +19,12 @@ urlpatterns = [
     url(r'^skus/categories/$', SKUCategoryView.as_view()),
     url(r'^goods/simple/$', SPUView.as_view()),
     url(r'^goods/(?P<pk>\d+)/specs/$', GoodsSpecsView.as_view()),
+
+    url(r'^goods/$', SPUViewSet.as_view({'get': 'list', 'post': 'create'})),
+    url(r'^goods/(?P<pk>\d+)/$', SPUViewSet.as_view({'delete': 'destroy', 'get': 'retrieve', 'put': 'update'})),
+    url(r'^goods/brands/simple/$', SPUBrandView.as_view()),
+    url(r'^goods/channel/categories/$', ChannelCategoryView.as_view()),
+    url(r'^goods/channel/categories/(?P<pk>\d+)/$', ChannelCategoryView.as_view()),
 ]
 
 router = SimpleRouter()
