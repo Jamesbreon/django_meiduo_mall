@@ -260,8 +260,6 @@ class AreaView(Base_view):
 
     def get(self, request):
 
-        # TODO 用缓存进行优化 cache
-
         area_id = request.GET.get('area_id')
 
         # 如果area_id 为None则说明查询的为省
@@ -270,42 +268,42 @@ class AreaView(Base_view):
             province_list = cache.get('province_list')
             if not province_list:
                 try:
-                    province_queryset = Area.objects.filter(parent__isnull=True)
+                    province_queryset = Area.objects.filter(parent=None)
                     province_list = []
                     for province_model in province_queryset:
                         province_list.append({'id': province_model.id, 'name': province_model.name})
-
-                    return JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'province_list': province_list})
+                        # 响应省份数据
+                        # 将省份信息保存到cache中
+                    cache.set('province_list', province_list, 3600)
 
                 except Exception as e:
                     logger.error(e)
                     return JsonResponse({'code': RETCODE.DBERR, 'errmsg': '省份数据错误'})
-            # 响应省份数据
-            # 将省份信息保存到cache中
-            cache.set('province_list', province_list, 3600)
+
             return JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'province_list': province_list})
+
         else:
-            sub_data = cache.get('sub_area')
+            sub_data = cache.get('sub_area' + area_id)
             if sub_data is None:
                 try:
                     # 查找所对应的城市
                     city = Area.objects.get(id=area_id)
+                    direct_qs = city.subs.all()
+                    sub_list = []
+                    for direct in direct_qs:
+                        sub_list.append({'id': direct.id, 'name': direct.name})
+
+                    sub_data = {
+                        'id': city.id,
+                        'name': city.name,
+                        'subs': sub_list
+                    }
+                    cache.set('sub_area' + area_id, sub_data, 3600)
                 except Area.DoesNotExist:
                     return JsonResponse({'code': RETCODE.PARAMERR, 'errmsg': '城市查找错误'})
 
                     # city.subs.all 等价于 city.city_set.all()  由于是自关联 则必须要重命名 否则会报错
                     # 城市所对应的所有的区
-                direct_qs = city.subs.all()
-                sub_list = []
-                for direct in direct_qs:
-                    sub_list.append({'id': direct.id, 'name': direct.name})
-
-                sub_data = {
-                    'id': city.id,
-                    'name': city.name,
-                    'subs': sub_list
-                }
-                cache.set('sub_area', sub_data, 3600)
 
             return JsonResponse({'code': RETCODE.OK, 'errmsg': 'OK', 'sub_data': sub_data})
 

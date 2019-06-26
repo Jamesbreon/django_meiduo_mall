@@ -4,8 +4,8 @@ from goods.models import SKU, SKUSpecification, GoodsCategory, SPU, SPUSpecifica
 
 
 class SKUSpecificationSerializer(serializers.ModelSerializer):
-    spec_id = serializers.IntegerField(read_only=True)
-    option_id = serializers.IntegerField(read_only=True)
+    spec_id = serializers.IntegerField()
+    option_id = serializers.IntegerField()
 
     class Meta:
         model = SKUSpecification
@@ -19,11 +19,50 @@ class SKUSerializer(serializers.ModelSerializer):
     category_id = serializers.IntegerField()
 
     # 序列化specs字段
-    specs = SKUSpecificationSerializer(read_only=True, many=True)
+    specs = SKUSpecificationSerializer(many=True)
 
     class Meta:
         model = SKU
         fields = "__all__"
+
+    # def create(self, validated_data):
+    """
+    {name: "1", spu_id: 1, caption: "3", category_id: 115, price: "4", cost_price: "4", market_price: "1",…}
+    caption: "3"
+    category_id: 115
+    cost_price: "4"
+    is_launched: ""
+    market_price: "1"
+    name: "1"
+    price: "4"
+    specs: [{spec_id: "2", option_id: 3}]
+        0: {spec_id: "2", option_id: 3}
+            option_id: 3
+            spec_id: "2"
+    spu_id: 1
+    stock: "1"
+    """
+
+    def create(self, validated_data):
+        # 获取前端传来的数据
+        specs = validated_data.pop('specs')
+        # 新建从表数据，主表中必须要有响应的sku
+        sku = super().create(validated_data)
+        # 保存中间表数据
+        for temp in specs:
+            temp['sku_id'] = sku.id
+            SKUSpecification.objects.create(**temp)
+
+        return sku
+
+    def update(self, instance, validated_data):
+        spec_option = validated_data.pop('specs')
+        for temp in spec_option:
+            option_model = SKUSpecification.objects.get(sku_id=instance.id, spec_id=temp['spec_id'])
+            option_model.option_id = temp['option_id']
+            option_model.save()
+        # DRF提供的ModelSerializer 无法更新中间表
+        return super().update(instance, validated_data)
 
 
 class SKUCategorySerializer(serializers.ModelSerializer):
@@ -46,7 +85,7 @@ class SpecOptSerializer(serializers.ModelSerializer):
 
 class SPUSpecOptSerializer(serializers.ModelSerializer):
     spu = serializers.StringRelatedField()
-    spu_id = serializers.IntegerField(read_only=True)
+    spu_id = serializers.IntegerField()
 
     # 与之关联的所有的从表对象
     options = SpecOptSerializer(read_only=True, many=True)
